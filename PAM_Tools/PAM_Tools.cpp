@@ -17,10 +17,17 @@
 #include <FS.h>
 
 //
+// Boolean to determine whether the file system has been initialized
+//
+bool SPIFFSStarted = false;
+
+//
 // Initialize the file system
 //
 void toolsSetup () {
-  bool result = SPIFFS.begin();
+  if (!SPIFFSStarted) {
+    SPIFFSStarted = SPIFFS.begin();
+  }
 }
 
 //
@@ -31,6 +38,9 @@ void toolsSetup () {
 // upload using the ESP8266 Sketch Data Upload
 //
 String getStringKey (String location, String key) {
+  if (!SPIFFSStarted) {
+    toolSetup();
+  }
   if (SPIFFS.exists("/"+location+"/"+key+".txt")) {
     File f = SPIFFS.open("/"+location+"/"+key+".txt","r");
     //
